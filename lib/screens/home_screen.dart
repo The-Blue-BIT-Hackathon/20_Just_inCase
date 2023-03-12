@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> screens = [
     const FeedPage(),
     const MainPage(),
-    const PrepScreeen(),
+    // const PrepScreeen(),
     // const FeedPage()
   ];
 
@@ -49,11 +49,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.white,
         actions: [
           Container(
+            width: mediaQuery.size.width * 0.97,
+            alignment: Alignment.centerLeft,
             margin: const EdgeInsets.symmetric(
               horizontal: 4.0,
             ),
@@ -70,37 +75,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   });
                 },
-                icon: const Icon(
+                icon: Container(
+                  margin: const EdgeInsets.only( top: 8.0, ),
+                  child: const Icon(
                     Icons.person,
                     color: Colors.black,
+                    size: 30,
+                  ),
                 ),
             ),
           )
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'Jobs',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.note),
-            label: 'Preparations',
-          ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.person),
-          //   label: 'Profile',
-          // ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.work),
+      //       label: 'Jobs',
+      //     ),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Colors.amber[800],
+      //   onTap: _onItemTapped,
+      // ),
       body: Container(
         alignment: Alignment.center,
         child: currentScreen

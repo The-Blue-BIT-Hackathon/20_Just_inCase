@@ -36,6 +36,8 @@ class _SignInCheckLoaderState extends State<SignInCheckLoader> {
       bool exists = await hiveService.isExists(boxName: 'logged_user');
       var data = await hiveService.openHiveBox('logged_user');
 
+      debugPrint( data.toMap().toString() );
+
       if( data.isEmpty ) {
         redirectScreen = SignInScreen();
         return;
@@ -44,8 +46,8 @@ class _SignInCheckLoaderState extends State<SignInCheckLoader> {
       var details = data.toMap().values.toList()[0];
 
       final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: details["userEmail"],
-          password: details["userPassword"]
+          email: details["email"],
+          password: details["password"]
       );
 
       if( exists ) {

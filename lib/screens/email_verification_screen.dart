@@ -76,16 +76,65 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          SizedBox(
+            width: mediaQuery.size.width * 0.7,
+            child: Image.asset(
+                "assets/images/img2.jpg"
+            ),
+          ),
+
+          Container(
+            margin: const EdgeInsets.symmetric( horizontal: 12.0, vertical: 12.0, ),
+            child: const Text(
+              "Verification Code Sent",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Container(
               margin: const EdgeInsets.symmetric(
                 horizontal: 12.0,
               ),
-              child: Text(
-                  "We have sent a otp on the mail ${widget.email}. Please Enter the OTP from your mail here."
+              child: Container(
+                margin: const EdgeInsets.symmetric( horizontal: 12.0, ),
+                child: Text(
+                  "We have sent an otp to ${widget.email}. Please Enter check your email to complete the verification process.",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    height: 1.15,
+                  ),
+                ),
+              )
+          ),
+
+          const SizedBox(
+            height: 20,
+          ),
+
+          Container(
+            height: mediaQuery.size.height * 0.4,
+            alignment: Alignment.bottomCenter,
+              margin: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+              ),
+              child: Container(
+                margin: const EdgeInsets.symmetric( horizontal: 12.0, ),
+                child: const Text(
+                  "You will be automatically redirected to next screen after verification..",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    height: 1.15,
+                    fontWeight: FontWeight.bold
+                  ),
+                ),
               )
           ),
         ]

@@ -92,15 +92,6 @@ class SignInScreen extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                      debugPrint( emailController.text );
-                      debugPrint( passwordController.text );
-
-                      // saving user data into hive storage
-                      final userData = {
-                        'userEmail' : emailController,
-                        'userPassword' : passwordController
-                      };
-
                       try{
                         final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
                             email: emailController.text,
@@ -113,8 +104,11 @@ class SignInScreen extends StatelessWidget {
                         
                         if( response.statusCode == 200 ) {
                           // also saving the user to hive services for next load up
-                          hiveService.setValue( userData, "logged_user" );
+                          hiveService.setValue( jsonDecode(response.body), "logged_user" );
                           FocusManager.instance.primaryFocus?.unfocus();
+
+                          var data = await  hiveService.openHiveBox("logged_user");
+                          debugPrint( data.toMap().toString() );
 
                           // navigating to the home Screen
                           Navigator.of(context).pushReplacement(
@@ -127,7 +121,7 @@ class SignInScreen extends StatelessWidget {
                           );  
                         }
                         else {
-                          debugPrint("Error in getting respons");
+                          debugPrint("Error in getting response");
                           debugPrint("Status code - ${response.statusCode}");
                         }
                       }

@@ -1,21 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class CustomDialog extends StatefulWidget {
+class AddEducationDialog extends StatefulWidget {
   Map<dynamic, dynamic> userDetails;
   Function( Map<String, dynamic> ) onClick;
 
-  CustomDialog({Key? key, required this.userDetails, required this.onClick}) : super(key: key);
+  AddEducationDialog({Key? key, required this.userDetails, required this.onClick}) : super(key: key);
 
   @override
-  _CustomDialogState createState() => _CustomDialogState();
+  _AddEducationDialogState createState() => _AddEducationDialogState();
 }
 
-class _CustomDialogState extends State<CustomDialog> {
-  bool currentlyWorking = false;
+class _AddEducationDialogState extends State<AddEducationDialog> {
 
   bool companyError = false;
   bool positionError = false;
@@ -31,115 +27,6 @@ class _CustomDialogState extends State<CustomDialog> {
   final TextEditingController positionController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
-
-
-  Future<void> addExperience( ) async {
-    showDialog(
-        context: context,
-        builder: (context) => Container(
-          color: Colors.white12,
-          alignment: Alignment.center,
-          child: CircularProgressIndicator.adaptive(
-            valueColor: AlwaysStoppedAnimation<Color>( Colors.grey.shade800),
-            strokeWidth: 5,
-          ),
-        )
-    );
-
-    // checking if company is valid
-    if( companyController.text.isEmpty ) {
-      setState(() {
-        companyErrorText = "company cannot be empty";
-        companyError = true;
-      });
-    }
-    else {
-      setState(() {
-        companyError = false;
-      });
-    }
-
-    // checking if position is valid
-    if( positionController.text.isEmpty ) {
-      setState(() {
-        positionErrorText = "company cannot be empty";
-        positionError = true;
-      });
-    }
-    else {
-      setState(() {
-        positionError = false;
-      });
-    }
-
-    // checking if startDate is valid
-    if( startDateController.text.isEmpty ) {
-      setState(() {
-        startDateErrorText = "Start Date cannot be empty";
-        startDateError = true;
-      });
-    }
-    else {
-      setState(() {
-        startDateError = false;
-      });
-    }
-
-    // checking if end Date is valid
-    if( endDateController.text.isEmpty && !currentlyWorking ) {
-      setState(() {
-        endDateErrorText = "End Date cannot be empty";
-        endDateError = true;
-      });
-    }
-    else {
-      setState(() {
-        endDateError = false;
-      });
-    }
-
-    // returning if any field is invalid
-    if( companyError || positionError || startDateError || endDateError ) {
-      debugPrint("test");
-      Navigator.of(context).pop();
-      return;
-    }
-
-    Map<String, dynamic> details = {
-      "user_id" : widget.userDetails['user_id'],
-      "company" : companyController.text,
-      "position" : positionController.text,
-      "start_date" : startDateController.text,
-      "end_date" : endDateController.text,
-      "isWorking" : "$currentlyWorking",
-    };
-
-    // sending api request to add experience
-    String url = "https://jobseekerapi.onrender.com/api/createexperience";
-
-    final requestHeaders = {
-      "Content-Type": "application/json"
-    };
-
-    http.Response response = await http.post(
-      Uri.parse( url ),
-      headers: requestHeaders,
-      body: jsonEncode(details),
-    );
-
-    if( response.statusCode == 200 || response.statusCode == 415  ) {
-      debugPrint("RESPONSE BODY - ${response.body}" );
-      widget.onClick( details );
-      Navigator.of(context).pop();
-    }
-    else {
-      debugPrint("unable to send request");
-      debugPrint("Status code - ${response.statusCode}");
-    }
-
-    Navigator.of(context).pop();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +44,7 @@ class _CustomDialogState extends State<CustomDialog> {
             Container(
               margin: const EdgeInsets.only( bottom: 16.0, ),
               child: const Text(
-                "Add Experience",
+                "Add Education",
                 style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold
@@ -561,7 +448,6 @@ class _CustomDialogState extends State<CustomDialog> {
                           });
                         }
                       },
-                      enabled: !currentlyWorking,
                       controller: endDateController,
                       decoration: InputDecoration(
                           fillColor: Colors.white,
@@ -626,9 +512,9 @@ class _CustomDialogState extends State<CustomDialog> {
                     },
                     icon: Container(
                       margin: const EdgeInsets.only(left: 12.0, ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.calendar_today_outlined,
-                        color: currentlyWorking ? Colors.grey : Colors.black,
+                        color: Colors.black,
                       ),
                     ),
                   )
@@ -651,24 +537,6 @@ class _CustomDialogState extends State<CustomDialog> {
               height: 10,
             ),
 
-            // i currently work here checkbox
-            Row(
-              children: [
-                Checkbox(
-                    value: currentlyWorking,
-                    onChanged: (value) {
-                      // clearing value of end date textfield
-                      endDateController.clear();
-
-                      setState(() {
-                        currentlyWorking = !currentlyWorking;
-                      });
-                    }
-                ),
-                const Text("I currently work here")
-              ],
-            ),
-
 
             // Adding a Save Button
             Container(
@@ -689,7 +557,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   ),
                   onPressed: () {
                     // add experience
-                    addExperience();
+
                   },
                   child: Text(
                     "Add Experience",

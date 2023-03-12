@@ -1,7 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:job_search_app/screens/sign_in_screen.dart';
 import 'package:job_search_app/utils/hive_services.dart';
+import 'package:job_search_app/widgets/add_education_dialog.dart';
+import 'package:job_search_app/widgets/experience_tile.dart';
+import 'package:http/http.dart' as http;
 
 import '../widgets/custom_dialog.dart';
 
@@ -16,6 +20,64 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   HiveServices hiveServices = HiveServices();
+  List<dynamic> experiences = [];
+  List<dynamic> educations = [];
+
+  @override
+  void initState( ) {
+    super.initState();
+
+    getExperiences();
+  }
+
+  Future<void> getExperiences() async {
+    // getting the list of experiences
+    String url = "http://jobseekerapi.onrender.com/api/getexperiencesofuser/${widget.userDetails['user_id']}";
+
+    http.Response response = await http.get(
+      Uri.parse( url ),
+    );
+
+    debugPrint("Status Code - ${response.statusCode}");
+    if( response.statusCode == 200 ) {
+      experiences = jsonDecode(response.body);
+      debugPrint( experiences.toString() );
+
+      setState(() {
+        debugPrint("RESPONSE BODY - ${response.body}");
+      });
+    }
+    else {
+      debugPrint("Unable to load response");
+      debugPrint("status Code - ${response.statusCode}");
+    }
+  }
+
+  Future<void> getEducation() async {
+
+  }
+
+  Future<void> addExperience( Map<String, dynamic> data ) async {
+    // sending request to add experience
+    String url = "https://jobseekerapi.onrender.com/api/createexperience";
+
+    http.Response response = await http.post(
+      Uri.parse( url ),
+      body: jsonEncode(data),
+    );
+
+    if( response.statusCode == 200 || response.statusCode == 415 ) {
+      // add experience to list of experiences
+      setState(() {
+        experiences.add( data );
+      });
+    }
+    else {
+      debugPrint("Unable to load response");
+      debugPrint("Status code - ${response.statusCode}");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -144,11 +206,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
+              const SizedBox(
+                height: 10,
+              ),
+
               Container(
                 alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 8.0, ),
+                margin: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 12.0, ),
                 child: const Text(
-                  "experience",
+                  "Experience",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -157,59 +223,21 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
 
               Container(
+                alignment: Alignment.centerLeft,
                 margin: const EdgeInsets.symmetric( horizontal: 8.0, ),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric( horizontal: 8.0, ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.white,
-                          border: Border.all(
-                              color: Colors.black
-                          ),
-                        ),
-                        width: mediaQuery.size.width * 0.7,
-                        height: mediaQuery.size.width * 0.3,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only( left: 12.0, top: 16.0, bottom: 6.0, ),
-                              child: const Text(
-                                "UC Barkleys",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold
-                                ),
-                              ),
-                            ),
-
-                            Container(
-                              margin: const EdgeInsets.symmetric( horizontal: 12.0, vertical: 4.0, ),
-                              child: const Text(
-                                "Software Developer 2",
-                                style: TextStyle(
-                                ),
-                              ),
-                            ),
-
-                            // start date and end date
-                            Container(
-                              margin: const EdgeInsets.symmetric( horizontal: 12.0, vertical: 4.0, ),
-                              child: const Text(
-                                "01-03-2023 - 01-03-2023",
-                                style: TextStyle(
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ...experiences.map((e) => ExperienceTile(
+                        title: e['company'],
+                        position: e['position'],
+                        startDate: e['start_date'],
+                        endDate: e['end_date'],
+                        currentlyWorking: e['isWorking'].toString().toLowerCase() == "true",
+                      )),
 
                       // add Experience
                       GestureDetector(
@@ -218,7 +246,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                content: CustomDialog(
+                                content: AddEducationDialog(
+                                  onClick: addExperience,
                                   userDetails: widget.userDetails,
                                 ),
                               )
@@ -245,6 +274,83 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               const Text("Add Experience")
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.symmetric( horizontal: 16.0, vertical: 12.0, ),
+                child: const Text(
+                  "Education",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+
+              Container(
+                alignment: Alignment.centerLeft,
+                margin: const EdgeInsets.symmetric( horizontal: 8.0, ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      ...educations.map((e) => ExperienceTile(
+                        title: e['company'],
+                        position: e['position'],
+                        startDate: e['start_date'],
+                        endDate: e['end_date'],
+                        currentlyWorking: e['isWorking'].toString().toLowerCase() == "true",
+                      )),
+
+                      // add Experience
+                      GestureDetector(
+                        onTap: () {
+                          // showing a popup to add new experience
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                content: CustomDialog(
+                                  onClick: addExperience,
+                                  userDetails: widget.userDetails,
+                                ),
+                              )
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Colors.white,
+                            border: Border.all(
+                                color: Colors.black
+                            ),
+                          ),
+                          width: mediaQuery.size.width * 0.4,
+                          height: mediaQuery.size.width * 0.3,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric( vertical: 4.0, ),
+                                child: const Icon(
+                                  Icons.add,
+                                  size: 28,
+                                ),
+                              ),
+                              const Text("Add Education")
                             ],
                           ),
                         ),
