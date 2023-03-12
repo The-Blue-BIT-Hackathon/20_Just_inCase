@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "170570727928",
+    "project_id": "job-search-bb973",
+    "storage_bucket": "job-search-bb973.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170570727928:android:0865012d280f9fb89a960d",
+        "android_client_info": {
+          "package_name": "com.example.job_search_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "170570727928-7rrlg85dvst2jt9e5qd0qfslr0jr17gg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.job_search_app",
+            "certificate_hash": "57c4239ee9ead7db52beb6ecc5db277f8c3f7714"
+          }
+        },
+        {
+          "client_id": "170570727928-0hoiuebjg7vj22pn2rv9crkiprref0qq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABm9cr3kNdxQMzfiwHPmSpFIRUgfuF8rM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "170570727928-0hoiuebjg7vj22pn2rv9crkiprref0qq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
